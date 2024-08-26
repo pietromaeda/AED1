@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct No {
+    long long valor;
+    struct No *prox;
+} No;
+
+typedef struct Pilha {
+    No *topo;
+} Pilha;
+
+void inicializaPilha(Pilha *p);
+void empilhar(Pilha *p, long long valor);
+void desempilhar(Pilha *p);
+long long encontraMenor(Pilha *p);
+
+int main() {
+    Pilha pilha;
+    unsigned int numOperacoes;
+    char comando[10];
+    long long valor;
+
+    inicializaPilha(&pilha);
+    scanf("%u", &numOperacoes);
+
+    while (numOperacoes--) {
+        scanf("%s", comando);
+
+        if (strcmp(comando, "PUSH") == 0) {
+            scanf("%lld", &valor);
+            empilhar(&pilha, valor);
+        } else if (strcmp(comando, "POP") == 0) {
+            desempilhar(&pilha);
+        } else if (strcmp(comando, "MIN") == 0) {
+            long long menor = encontraMenor(&pilha);
+            if (menor == -1)
+                printf("EMPTY\n");
+            else
+                printf("%lld\n", menor);
+        }
+    }
+
+    return 0;
+}
+
+void inicializaPilha(Pilha *p) {
+    p->topo = NULL;
+}
+
+void empilhar(Pilha *p, long long valor) {
+    No *novo = (No *)malloc(sizeof(No));
+    if (!novo)
+        exit(1);
+
+    novo->valor = valor;
+    novo->prox = p->topo;
+    p->topo = novo;
+}
+
+void desempilhar(Pilha *p) {
+    if (p->topo) {
+        No *temp = p->topo;
+        p->topo = p->topo->prox;
+        free(temp);
+    } else {
+        printf("EMPTY\n");
+    }
+}
+
+long long encontraMenor(Pilha *p) {
+    if (!p->topo)
+        return -1;
+
+    long long menor = p->topo->valor;
+    No *atual = p->topo->prox;
+
+    while (atual) {
+        if (atual->valor < menor)
+            menor = atual->valor;
+        atual = atual->prox;
+    }
+
+    return menor;
+}
